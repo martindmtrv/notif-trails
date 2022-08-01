@@ -1,20 +1,28 @@
 import config from "./config.js";
 import fetch from "node-fetch";
 import { clearInterval } from "timers";
-import {playAudioFile} from "audic";
+import { playAudioFile } from "audic";
 
 const baseApi: string = "https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api";
 
 interface FacilityAPIResponse {
   name: string;
   bookingTimes: {
-    DAY: {
+    DAY?: {
+      max: number
+    },
+    AM?: {
+      max: number
+    },
+    PM?: {
       max: number
     }
   },
   reservations: {
     [date: string]: {
-      DAY: number
+      DAY?: number,
+      AM?: number,
+      PM?: number,
     }
   },
   type: string
