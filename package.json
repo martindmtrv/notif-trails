@@ -1,0 +1,20 @@
+{
+  "name": "notif-trails",
+  "version": "1.0.0",
+  "main": "trailWatch.js",
+  "author": "Martin Dimitrov <martin3dimitrov@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "ts-node --esm trailWatch.ts"
+  },
+  "dependencies": {
+    "@types/node": "^18.6.3",
+    "audic": "^3.0.1",
+    "node-fetch": "^3.2.10",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4",
+    "@tsconfig/esm": "^1.0.2"
+  }
+}
