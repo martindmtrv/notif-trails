@@ -5,6 +5,25 @@ import { playAudioFile } from "audic";
 
 const baseApi: string = "https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api";
 
+type Period = "DAY" | "AM" | "PM";
+
+interface Config {
+  park: string;
+  facility: string;
+  date: string;
+  period: Period;
+  ntfyEndpoint?: string;
+}
+
+interface ReservationAPIResponse {
+  [date: string]: {
+    [period in Period]: {
+      capacity: 'Low' | 'Full';
+      max: number;
+    };
+  },
+}
+
 interface FacilityAPIResponse {
   name: string;
   bookingTimes: {
@@ -18,49 +37,37 @@ interface FacilityAPIResponse {
       max: number
     }
   },
-  reservations: {
-    [date: string]: {
-      DAY?: number,
-      AM?: number,
-      PM?: number,
-    }
-  },
+  reservations: ReservationAPIResponse,
   type: string
 };
 
 class TrailWatch {
-  private park: string;
-  private date: string;
-  private type: string;
-  private name: string;
-  private period: string;
-  private ntfyEndpoint: string;
+  private config: Config;
 
   constructor() {
-    this.park = config.park;
-    this.date = config.date;
-    this.type = config.type;
-    this.name = config.name;
-    this.period = config.period;
-    this.ntfyEndpoint = config.ntfyEndpoint;
-
-    if (this.park == null || this.date == null || this.type == null || this.name == null || this.period == null) {
-      throw new Error("Invalid config");
-    }
+    this.config = config as Config;
   }
 
   async hasAvailability(): Promise<Boolean> {
-    const response: FacilityAPIResponse[] = 
-      await fetch(baseApi + "/facility/?facilities=true&park=" + encodeURIComponent(this.park))
-        .then(res => res.json()) as FacilityAPIResponse[];
+    const url = baseApi + `/reservation?&park=${this.config.park}&facility=` + encodeURIComponent(this.config.facility);
+
+    const response: ReservationAPIResponse = 
+      await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/127.0"
+        }
+      }).then(res => res.json()) as ReservationAPIResponse;
 
     try {
-      const result: FacilityAPIResponse = response.find((el) => el.name === config.name && el.type === config.type);
-      const maxSpots: number = result.bookingTimes[this.period].max;
+      const spotsForDate = response[this.config.date];
+      
+      if (!spotsForDate) {
+        console.warn("Current date is not available for booking. This may be intentional if you are scraping before the spots first open up");
+        return false;
+      }
+      const spots = spotsForDate[this.config.period];
 
-      const spots: number = result.reservations[this.date][this.period];
-
-      return spots === undefined || spots < maxSpots;
+      return spots.capacity !== "Full" && spots.max > 0;
     } catch(e: any) {
       console.error(e);
       throw new Error("Unknown API Response");
@@ -69,10 +76,10 @@ class TrailWatch {
   
   async notify(): Promise<void> {
     await playAudioFile("notifSound.wav");
-    if (this.ntfyEndpoint) {
-      await fetch(this.ntfyEndpoint, {
+    if (this.config.ntfyEndpoint) {
+      await fetch(this.config.ntfyEndpoint, {
         method: "POST",
-        body: `Found a ${this.type} pass for ${this.park} on ${this.date}, go book it now!`,
+        body: `Found a ${this.config.period} pass for ${this.config.facility} on ${this.config.date}, go book it now!`,
       });
     }
   }

@@ -16,6 +16,8 @@ Setup the `config.js` for the day, pass type, and park you want to visit and run
 
 # Configuration
 
+### TODO: update the exmaples since they are all out of date now
+
 A sample configuration is included: (the one I used to get a spot in Joffre Lakes the night before)
 
 ```
