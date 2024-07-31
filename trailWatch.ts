@@ -34,6 +34,7 @@ class TrailWatch {
   private type: string;
   private name: string;
   private period: string;
+  private ntfyEndpoint: string;
 
   constructor() {
     this.park = config.park;
@@ -41,6 +42,7 @@ class TrailWatch {
     this.type = config.type;
     this.name = config.name;
     this.period = config.period;
+    this.ntfyEndpoint = config.ntfyEndpoint;
 
     if (this.park == null || this.date == null || this.type == null || this.name == null || this.period == null) {
       throw new Error("Invalid config");
@@ -67,6 +69,12 @@ class TrailWatch {
   
   async notify(): Promise<void> {
     await playAudioFile("notifSound.wav");
+    if (this.ntfyEndpoint) {
+      await fetch(this.ntfyEndpoint, {
+        method: "POST",
+        body: `Found a ${this.type} pass for ${this.park} on ${this.date}, go book it now!`,
+      });
+    }
   }
 }
 
