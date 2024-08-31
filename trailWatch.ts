@@ -46,17 +46,22 @@ class TrailWatch {
 
   constructor() {
     this.config = config as Config;
+    console.log(config);
   }
 
   async hasAvailability(): Promise<Boolean> {
-    const url = baseApi + `/reservation?&park=${this.config.park}&facility=` + encodeURIComponent(this.config.facility);
-
+    const url = baseApi + `/reservation?facility=${this.config.facility}&park=${this.config.park}`;
+    console.log(url);
     const response: ReservationAPIResponse = 
       await fetch(url, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/127.0"
+         "User-Agent": "Firefox",
+	 "Accept": "application/json"
         }
-      }).then(res => res.json()) as ReservationAPIResponse;
+      }).then(res => {
+      	console.log(res.status);
+      	return res.json()
+      }) as ReservationAPIResponse;
 
     try {
       const spotsForDate = response[this.config.date];

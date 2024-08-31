@@ -51,7 +51,7 @@ Configuration to poll for Cheakamus AM Parking on August 2, 2024
 ```
 export default {
   "park": "0007",
-  "name": "Cheakamus",
+  "facility": "Cheakamus",
   "period": "AM",
   "date": "2024-08-02"
 }
@@ -61,7 +61,7 @@ Configuration to poll for Rubble Creek day Parking on August 5, 2024
 ```
 export default {
   "park": "0007",
-  "name": "Rubble Creek",
+  "facility": "Rubble Creek",
   "period": "DAY",
   "date": "2024-08-05"
 }
