@@ -81,6 +81,7 @@ class TrailWatch {
   
   async notify(): Promise<void> {
     await playAudioFile("notifSound.wav");
+    console.log("send notif");
     if (this.config.ntfyEndpoint) {
       await fetch(this.config.ntfyEndpoint, {
         method: "POST",
@@ -90,7 +91,7 @@ class TrailWatch {
   }
 }
 
-function main() {
+async function main() {
   const runner: TrailWatch = new TrailWatch();
   let tries: number = 1;
 
@@ -99,11 +100,11 @@ function main() {
 
     if (await runner.hasAvailability()) {
       console.log("found a spot!");
-      runner.notify();
+      await runner.notify();
       clearInterval(timer);
     }
     tries++;
-  }, 10000);
+  }, 35000);
 }
 
 main();
