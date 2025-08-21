@@ -103,10 +103,16 @@ async function main() {
   let timer = setInterval(async () => {
     console.log(`Try #${tries}`);
 
-    if (await runner.hasAvailability()) {
-      console.log("found a spot!");
-      await runner.notify();
-      //clearInterval(timer);
+    try {
+      
+      if (await runner.hasAvailability()) {
+        console.log("found a spot!");
+        await runner.notify();
+        //clearInterval(timer);
+      }
+    } catch (e) {
+      console.error(e);
+      console.log("something went wrong");
     }
     tries++;
   }, 10000);
