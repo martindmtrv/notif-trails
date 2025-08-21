@@ -3,7 +3,8 @@ import fetch from "node-fetch";
 import { clearInterval } from "timers";
 import { playAudioFile } from "audic";
 
-const baseApi: string = "https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api";
+//const baseApi: string = "https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api";
+const baseApi: stirng = "https://d757dzcblh.execute-api.ca-central-1.amazonaws.com/api";
 
 type Period = "DAY" | "AM" | "PM";
 
@@ -56,12 +57,13 @@ class TrailWatch {
       await fetch(url, {
         headers: {
          "User-Agent": "Firefox",
-	 "Accept": "application/json"
+         "Accept": "application/json"
         }
       }).then(res => {
-      	console.log(res.status);
-      	return res.json()
+        console.log(res.status);
+        return res.json()
       }) as ReservationAPIResponse;
+    //console.log(response);
 
     try {
       const spotsForDate = response[this.config.date];
@@ -85,7 +87,10 @@ class TrailWatch {
     if (this.config.ntfyEndpoint) {
       await fetch(this.config.ntfyEndpoint, {
         method: "POST",
-        body: `Found a ${this.config.period} pass for ${this.config.facility} on ${this.config.date}, go book it now!`,
+        headers: {
+          "Content-Type": "application/json"
+        }
+        body: JSON.stringify({ body: `Found a ${this.config.period} pass for ${this.config.facility} on ${this.config.date}, go book it now!`}),
       });
     }
   }
@@ -101,11 +106,10 @@ async function main() {
     if (await runner.hasAvailability()) {
       console.log("found a spot!");
       await runner.notify();
-      clearInterval(timer);
+      //clearInterval(timer);
     }
     tries++;
-  }, 35000);
+  }, 10000);
 }
 
 main();
-
