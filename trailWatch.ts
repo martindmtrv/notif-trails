@@ -88,8 +88,8 @@ class TrailWatch {
       await fetch(this.config.ntfyEndpoint, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ body: `Found a ${this.config.period} pass for ${this.config.facility} on ${this.config.date}, go book it now!`}),
       });
     }
@@ -115,7 +115,7 @@ async function main() {
       console.log("something went wrong");
     }
     tries++;
-  }, 10000);
+  }, 60000);
 }
 
 main();
